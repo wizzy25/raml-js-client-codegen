@@ -1,0 +1,18 @@
+{
+  "name": "raml-js-client-codegen",
+  "version": "0.0.1",
+  "description": "A module to generate javascript clients from RAML API specification",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "raml",
+    "client",
+    "js",
+    "generate",
+    "api"
+  ],
+  "author": "Williams Omayuku <womayuku@gmail.com>",
+  "license": "MIT"
+}
