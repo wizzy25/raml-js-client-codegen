@@ -1,0 +1,24 @@
+class Client {
+  constructor(options) {
+    this.baseUri = '{{baseUri}}'
+    {{#if endPoints}}
+    this.endPoints = [{{#each endPoints}}'{{this}}',{{/each}}]
+    {{/if}}
+  }
+
+{{#each resources}}
+  {{toUpperCase method}}_{{uniqueId}} (parameters = {}) {
+    const headers = {}
+    let url = '{{absoluteUri}}'
+    {{#if queryParameters}}
+    const queryParameters = [{{#each queryParameters}}'{{this.name}}',{{/each}}]
+    {{/if}}
+    {{#parseUri this }}
+    {{#each this}}
+    {{this}}
+    {{/each}}
+    {{/parseUri}}
+  }
+
+{{/each}}
+}

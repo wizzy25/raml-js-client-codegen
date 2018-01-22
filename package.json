@@ -25,6 +25,7 @@
   "author": "Williams Omayuku <womayuku@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "handlebars": "^4.0.11",
     "raml2obj": "^5.9.0"
   },
   "devDependencies": {

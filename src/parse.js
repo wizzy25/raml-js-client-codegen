@@ -27,7 +27,7 @@ function flattenResources({ resources }) {
 
 
 // Parse RAML spec to javascript object
-export default async function parse(ramlFile) {
+export default async function parser(ramlFile) {
   try {
     const apiSpec = await raml2obj.parse(ramlFile);
     const flatAPI = { ...apiSpec, ...flattenResources(apiSpec) };
