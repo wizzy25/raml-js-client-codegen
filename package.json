@@ -4,7 +4,16 @@
   "description": "A module to generate javascript clients from RAML API specification",
   "main": "index.js",
   "scripts": {
+    "build": "babel src -d lib",
+    "lint": "./node_modules/.bin/eslint src/**",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wizzy25/raml-js-client-codegen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wizzy25/raml-js-client-codegen/issues"
   },
   "keywords": [
     "raml",
@@ -14,5 +23,14 @@
     "api"
   ],
   "author": "Williams Omayuku <womayuku@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "raml2obj": "^5.9.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.16.0"
+  }
 }
