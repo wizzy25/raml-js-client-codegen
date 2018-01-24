@@ -27,14 +27,16 @@ function flattenResources({ resources }) {
 
 
 // Parse RAML spec to javascript object
-export default async function parser(ramlFile) {
-  try {
-    const apiSpec = await raml2obj.parse(ramlFile);
-    const flatAPI = { ...apiSpec, ...flattenResources(apiSpec) };
-    return flatAPI;
-  } catch (error) {
-    process.stderr.write(error.toString());
-    process.stderr.write(error.stack);
-    return error;
-  }
+function parse(ramlFile) {
+
+  return raml2obj.parse(ramlFile)
+    .then((apiSpec) => {
+      const flatAPI = { ...apiSpec, ...flattenResources(apiSpec) };
+      return Promise.resolve(flatAPI);
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
 }
+
+module.exports = parse;

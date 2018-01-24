@@ -4,6 +4,29 @@ class Client {
     {{#if endPoints}}
     this.endPoints = [{{#each endPoints}}'{{this}}',{{/each}}]
     {{/if}}
+
+    {{#if securitySchemes.basicAuth}}
+    if (options.access_token)
+      this.basicAuthHeaders = { Authorization: `Basic ${options.access_token}` }
+    else if (options.authorization) {
+      this.basicAuthHeaders = { Authorization: `Basic ${new Buffer(options.authorization).toString('base64')}` }
+    } else
+      throw new Error ('Missing authentication parameters')
+    {{/if}}
+    {{#if securitySchemes.oauth_2_0}}
+    if (option.access_token)
+      this.oauth2Headers = { Authorization: `Bearer ${options.access_token}` }
+    else {
+      // TO BE IMPLEMENTED
+    }
+    {{/if}}
+  }
+
+  _buildQuery(parameters, queryParameters) {
+    return queryParameters.map((queryParam) => {
+      if (parameters[queryParam])
+        return `${queryParam}=${parameters[queryParam]}`
+    }).join('&')
   }
 
 {{#each resources}}
@@ -18,6 +41,26 @@ class Client {
     {{this}}
     {{/each}}
     {{/parseUri}}
+    {{#parseQuery this }}
+    {{#each this}}
+    {{this}}
+    {{/each}}
+    {{/parseQuery}}
+    {{#parseHeaders this }}
+    {{#each this}}
+    {{this}}
+    {{/each}}
+    {{/parseHeaders}}
+    {{#parseBody this }}
+    {{#each this}}
+    {{this}}
+    {{/each}}
+    {{/parseBody}}
+    {{#parseAuthorization this }}
+    {{#each this}}
+    {{this}}
+    {{/each}}
+    {{/parseAuthorization}}
   }
 
 {{/each}}
