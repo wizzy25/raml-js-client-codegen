@@ -1,25 +1,41 @@
+require('isomorphic-fetch')
+
 class Client {
   constructor(options) {
-    this.baseUri = '{{baseUri}}'
+    {{#parseBaseUri this}}
+    {{#each this}}
+    {{this}}
+    {{/each}}
+    {{/parseBaseUri}}
     {{#if endPoints}}
     this.endPoints = [{{#each endPoints}}'{{this}}',{{/each}}]
     {{/if}}
 
-    {{#if securitySchemes.basicAuth}}
-    if (options.access_token)
-      this.basicAuthHeaders = { Authorization: `Basic ${options.access_token}` }
-    else if (options.authorization) {
-      this.basicAuthHeaders = { Authorization: `Basic ${new Buffer(options.authorization).toString('base64')}` }
-    } else
-      throw new Error ('Missing authentication parameters')
-    {{/if}}
-    {{#if securitySchemes.oauth_2_0}}
-    if (option.access_token)
-      this.oauth2Headers = { Authorization: `Bearer ${options.access_token}` }
-    else {
-      // TO BE IMPLEMENTED
-    }
-    {{/if}}
+    this.dispatch = this.createDispatch(options.middlewares)
+  }
+
+  createDispatch(middlewares) {
+    let dispatch = () => {
+      throw new Error(
+      'Dispatching while constructing your middleware is not allowed. ' +
+        'Other middleware would not be applied to this dispatch.'
+      );
+    };
+    const finalDispatch = request => {
+      return fetch(request);
+    };
+    const chain = middlewares.map(middleware => middleware(dispatch));
+    dispatch = this._compose(...chain)(finalDispatch);
+  }
+
+  _compose(...fns) {
+    if (fns.length === 0)
+      return arg => arg;
+
+    if (fns.length === 1)
+      return fns[0];
+
+    return fns.reduce((a, b) => (...args) => a(b(...args)))
   }
 
   _buildQuery(parameters, queryParameters) {
@@ -30,9 +46,9 @@ class Client {
   }
 
 {{#each resources}}
-  {{toUpperCase method}}_{{uniqueId}} (parameters = {}) {
+  {{toUpperCase method}}_{{uniqueId}}(parameters = {}) {
     const headers = {}
-    let url = '{{absoluteUri}}'
+    let path = '{{parentUrl}}{{relativeUri}}'
     {{#if queryParameters}}
     const queryParameters = [{{#each queryParameters}}'{{this.name}}',{{/each}}]
     {{/if}}
@@ -56,12 +72,13 @@ class Client {
     {{this}}
     {{/each}}
     {{/parseBody}}
-    {{#parseAuthorization this }}
-    {{#each this}}
-    {{this}}
-    {{/each}}
-    {{/parseAuthorization}}
+    const url = this.baseUri + path
+
+    const request = { url, headers,{{#if body}} body,{{/if}} method: '{{toUpperCase method}}' }
+    return this.dispatch(request)
   }
 
 {{/each}}
 }
+
+exports = Client

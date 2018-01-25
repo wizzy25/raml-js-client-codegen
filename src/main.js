@@ -6,15 +6,38 @@ Handlebars.registerHelper('toUpperCase', (str) => {
   return str.toUpperCase();
 });
 
-Handlebars.registerHelper('parseAuthorization', ({ securedBy }, opts) => {
-  if (!securedBy)
-    return null;
+Handlebars.registerHelper('parseBaseUri', ({
+  baseUri,
+  baseUriParameters,
+  version
+}, opts) => {
   const statements = [];
-  if (securedBy[0].schemeName === 'basicAuth')
-    statements.push('headers = { ...headers, ...this.basicAuthHeaders })');
+  if (!baseUriParameters)
+    statements.push(`this.baseUri = '${baseUri}'`);
+  else {
+    if (baseUri.includes('{version}'))
+      statements.push(`this.baseUri = '${
+        baseUri.replace('{version}', version)}'`);
+    else
+      statements.push(`this.baseUri = '${baseUri}'`);
+
+    const placeholders = baseUri.split('{')
+      .filter((v) => v.indexOf('}') > -1)
+      .map((value) => value.split('}')[0]);
+
+    if (placeholders.length)
+      placeholders.forEach((placeholder) => {
+        if (placeholder === 'version')
+          statements.push(`this.baseUri = '${
+            baseUri.replace('{version}', version)}'`);
+        else
+          statements.push(`this.baseUri = this.baseUri.replace('{${
+            placeholder}}', options.parameters['${placeholder}'])`,
+          );
+      });
+  }
   return opts.fn(statements);
 });
-
 
 Handlebars.registerHelper('parseHeaders', ({ headers }, opts) => {
   if (!headers)
@@ -59,7 +82,7 @@ Handlebars.registerHelper('parseUri', (
       });
 
       statements.push(
-        `url = url.replace('{${placeholder}}', parameters['${placeholder}'])`,
+        `path = path.replace('{${placeholder}}', parameters['${placeholder}'])`,
       );
     });
   }
@@ -75,7 +98,7 @@ Handlebars.registerHelper('parseQuery', ({ queryParameters }, opts) => {
       statements.push(`if (!parameters['${name}']) {`);
       statements.push(
         '  return Promise.reject(new Error('
-        + `Missing required query parameter: ${name}'))`
+        + `'Missing required query parameter: ${name}'))`
       );
       statements.push('}');
     }
@@ -83,7 +106,7 @@ Handlebars.registerHelper('parseQuery', ({ queryParameters }, opts) => {
   statements.push(
     'const queryString = this._buildQuery(parameters, queryParameters)',
   );
-  statements.push('url = `${url}?${queryString}`');
+  statements.push('path = `${path}?${queryString}`');
   return opts.fn(statements);
 });
 
@@ -97,6 +120,7 @@ Handlebars.registerHelper('parseBody', ({ body }, opts) => {
   statements.push(`headers['Content-Type'] = '${(body[0].key)}'`);
   return opts.fn(statements);
 });
+
 /* options is an object having the following properties
  * - input {String}: path to the RAML specification file
  * - template {String}: name of template (defaults to `default`)

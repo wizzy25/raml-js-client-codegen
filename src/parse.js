@@ -3,9 +3,11 @@ const raml2obj = require('raml2obj');
 // Flatten the methods in the resources
 function flattenMethods(resource) {
   const { methods, ...restResource } = resource;
-  return methods.map((method) => {
-    return { ...method, ...restResource };
-  });
+  if (methods)
+    return methods.map((method) => {
+      return { ...method, ...restResource };
+    });
+  return {};
 }
 
 // Flatten the resources recursively
