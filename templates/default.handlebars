@@ -22,10 +22,11 @@ class Client {
       );
     };
     const finalDispatch = request => {
-      return fetch(request);
+      const { url, ...rest } = request;
+      return fetch(url, rest);
     };
     const chain = middlewares.map(middleware => middleware(dispatch));
-    dispatch = this._compose(...chain)(finalDispatch);
+    return this._compose(...chain)(finalDispatch);
   }
 
   _compose(...fns) {
@@ -81,4 +82,4 @@ class Client {
 {{/each}}
 }
 
-exports = Client
+module.exports = Client
