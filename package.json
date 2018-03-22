@@ -2,16 +2,14 @@
   "name": "raml-js-client-codegen",
   "version": "0.0.1",
   "description": "A module to generate javascript clients from RAML API specification",
-  "main": "index.js",
-  "bin": {
-    "raml-js-client-codegen": "bin/raml-js-client-codegen"
-  },  "scripts": {
+  "bin": "./launcher",
+  "scripts": {
     "build": "babel src -d lib",
     "lint": "./node_modules/.bin/eslint src/**",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "files": [
-    "bin",
+    "./launcher",
     "lib"
   ],
   "repository": {

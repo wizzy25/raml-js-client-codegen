@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
-const generator = require('./main');
+const generator = require('./generator');
 const { name, description } = require('../package.json');
 
 process.title = name;
@@ -53,12 +53,7 @@ async function execute({ env, input, output }) {
     templatePath: path.join(__dirname, '../templates/default.handlebars')
   };
   try {
-    const st = Date.now()
-    console.log(new Date(st))
     await generator(options);
-    const ft = Date.now()
-    console.log(new Date(ft))
-    console.log(`Duration: ${ft - st}`)
     console.log('Client successfully generated to output file');
   } catch(error) {
     console.error('Error occured while generaring client');
