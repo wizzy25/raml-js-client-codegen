@@ -126,16 +126,14 @@ Handlebars.registerHelper('parseBody', ({ body }, opts) => {
  * - template {String}: name of template (defaults to `default`)
  * - output {String}: path to location where to write generated file
 **/
-async function generator(options) {
+async function generator({ env, input, output, templatePath }) {
   // Get a parsed JS object from RAML specification file
   try {
-    const jsApi = await parser(options.input);
-    const template = fs.readFileSync(options.template, 'utf8');
+    const isNode = env === 'node' ? true : false
+    const jsApi = await parser(input);
+    const template = fs.readFileSync(templatePath, 'utf8');
     const compiledTemplate = Handlebars.compile(template, { noEscape: true });
-    const outputPath = options.output.endsWith('.js')
-      ? options.output
-      : `${options.output}.js`;
-    fs.writeFileSync(outputPath, compiledTemplate(jsApi));
+    output.write(compiledTemplate({ ...jsApi, isNode }));
     return 'Success';
   } catch(error) {
     throw error;

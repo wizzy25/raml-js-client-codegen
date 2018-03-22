@@ -1,6 +1,6 @@
-require('isomorphic-fetch')
+{{#if this.isNode}}require('isomorphic-fetch')
 
-class Client {
+{{/if}}class Client {
   constructor(options) {
     {{#parseBaseUri this}}
     {{#each this}}
