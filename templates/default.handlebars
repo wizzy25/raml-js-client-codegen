@@ -75,7 +75,7 @@ class Client {
     {{/parseBody}}
     const url = this.baseUri + path
 
-    const request = { url, headers,{{#if body}} body,{{/if}} method: '{{toUpperCase method}}' }
+    const request = { url, headers,{{#if body}} body: JSON.stringify(body),{{/if}} method: '{{toUpperCase method}}' }
     return this.dispatch(request)
   }
 
